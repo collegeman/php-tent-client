@@ -1,17 +1,16 @@
 <?php
 /**
- * Models the response from a Tent Server. Subclasses
- * need only implement AbstractTentResponse::setStatusHeader,
- * but may also choose to override AbstractTentResponse::write.
+ * Models the response from a Tent Server. 
  */
-abstract class TentResponse implements ArrayAccess, Iterator {
+class TentResponse implements ArrayAccess, Iterator {
 
-  // body of the response - will be JSON encoded
+  protected $_rawBody;
+  // json-decoded body of the response
   protected $_body;
   // when response is an file
   protected $_file;
-  // When response is an error, holds the code of that error
-  protected $_errorCode;
+  // Holds the HTTP status header code, e.g., 200
+  protected $_statusCode;
   // When response includes an error message, holds that message
   protected $_errorMsg;
   // HTTP headers that should be in the response
@@ -21,37 +20,45 @@ abstract class TentResponse implements ArrayAccess, Iterator {
   );
 
   /**
-   * Initialize a new AbstractTentResponse implementation
+   * Initialize a new TentResponse
    * @param array (optional) Headers
-   * @param string (optinoal) Implementing class; overidden by TENT_RESPONSE_TYPE
    */
-  static function get($headers = null, $type = null) {
-    if (defined('TENT_RESPONSE_TYPE')) {
-      $type = TENT_RESPONSE_TYPE;
-    }
-    $class = ucwords($type).'TentResponse';
-    return new $class($headers);
+  static function get($headers = null) {
+    return new TentResponse($headers);
   }
 
   /**
    * Create an error response.
+   * @param int HTTP status of error
+   * @param string Error message
+   * @param array headers in the response
+   * @return TentResponse
    */
-  static function error($code, $message = null, $headers = null) {
+  static function error($httpStatusCode = 500, $message = null, $headers = null) {
     $R = self::get($headers);
-    $R->_errorCode = $code;
+    $R->_statusCode = $httpStatusCode;
     $R->_errorMsg = $message;
     return $R;
   }
 
-  static function file(/* iTentFile */ $file, $headers = null) {
+  /**
+   * Create a file response.
+   * @param iTentFile file
+   * @param array headers in the response
+   * @return TentResponse
+   */
+  static function file(/* iTentFile */ $file, $httpStatusCode = 200, $headers = null) {
     $R = self::get($headers);
+    $R->_statusCode = $httpStatusCode;
     $R->_file = $file;
     return $R;
   }
 
-  static function create($body, $headers = null) {
+  static function create($body, $httpStatusCode = 200, $headers = null) {
     $R = self::get($headers);
-    $R->_body = $body;
+    $R->_statusCode = $httpStatusCode;
+    $R->_rawBody = $body;
+    $R->_body = json_decode($R->_rawBody);
     return $R;
   }
 
@@ -62,36 +69,35 @@ abstract class TentResponse implements ArrayAccess, Iterator {
   }
 
   function isError() {
-    return !is_null($this->errorCode) || !is_null($this->errorMsg);
+    return $this->getErrorCode() || !is_null($this->_errorMsg);
   }
 
   function getErrorCode() {
-    return $this->_errorCode;
+    return strpos($this->_statusCode, '2') !== 0 ? $this->_statusCode : false;
   }
 
   function getErrorMessage() {
     return $this->_errorMsg;
   }
 
-  abstract function setStatusHeader($code);
-
   /**
    * Render the Response
    * @param bool Control header output; pass false to disable
    */
-  function write($setHeaders = true) {  
+  function write($writeHeaders = true) {  
     $file = $this->getFile();
-    if ($setHeaders) {
+    if ($writeHeaders) {
       // if file is in response, override Content-Type
       if (!is_null($file)) {
         $this->setHeader('Content-Type', $file->getMimeType());
       }
       if ($this->isError()) {
-        $this->setStatusHeader($this->_errorCode);
         $this->setHeader('X-TENT-ERROR-MSG', $this->_errorMsg);
       } else {
-        $this->setStatusHeader(200);
         $this->setHeader('ETag', $this->getETag());
+      }
+      if (!isset($this->_headers['Status'])) {
+        $this->_headers['Status'] = $this->_statusCode;
       }
       foreach($this->getHeaders() as $name => $value) {
         header("{$name}: {$value}");
@@ -120,6 +126,10 @@ abstract class TentResponse implements ArrayAccess, Iterator {
     return $this->_body;
   }
 
+  function getRawBody() {
+    return $this->_rawBody;
+  }
+
   function setBody($body) {
     $this->_body = $body;
   }
@@ -138,6 +148,10 @@ abstract class TentResponse implements ArrayAccess, Iterator {
 
   function setHeader($name, $value = '') {
     $this->_headers[$name] = $value;
+  }
+
+  function getHeader($name) {
+    return isset($this->_headers[$name]) ? $this->_headers[$name] : false;
   }
 
   function offsetExists($offset) {

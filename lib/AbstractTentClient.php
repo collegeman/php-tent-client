@@ -4,15 +4,20 @@
  */
 abstract class AbstractTentClient {
 
-  function __construct() {}
-
-  abstract function request($url, $options = array());
+  function __construct() {
+    if (!function_exists('json_decode')) {
+      throw new Exception('CurlTentClient needs the JSON PHP extension.');
+    }
+  }
 
   /**
-   * @return AbstractTentResponse
+   * Build and send an HTTP request.
+   * @param string $options['method'] Should be the HTTP method; should default to GET
+   * @param mixed $options['body'] Should be the request body
+   * @param mixed $options['file'] An iTentFile object, when sending a file
+   * @param mixed $options['headers'] An array of headers to send, formatted "Name: Value"
+   * @return TentResponse
    */
-  function send(/* AbstractTentRequest */ $request) {
-    return TentResponse::error("Not yet implemented.");
-  }
+  abstract function request($url, $options = array());
 
 }
