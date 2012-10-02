@@ -68,9 +68,7 @@ The contents of `$config` will look like this:
 
 Now that you have your `mac_key_id` and `mac_key`, you'll want to
 store these values somewhere and relate them back to the user's
-Entity ID.
-
-For example, our console application stores it's keys this way:
+Entity ID. For example, our console application stores its keys this way:
 
     if ($registration = $app->register()) {
       session_start();
