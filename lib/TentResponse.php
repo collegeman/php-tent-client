@@ -4,40 +4,53 @@
  * need only implement AbstractTentResponse::setStatusHeader,
  * but may also choose to override AbstractTentResponse::write.
  */
-abstract class AbstractTentResponse implements ArrayAccess, Iterator {
+abstract class TentResponse implements ArrayAccess, Iterator {
 
   // body of the response - will be JSON encoded
-  private $_body;
+  protected $_body;
   // when response is an file
-  private $_file;
+  protected $_file;
   // When response is an error, holds the code of that error
-  private $_errorCode;
+  protected $_errorCode;
   // When response includes an error message, holds that message
-  private $_errorMsg;
+  protected $_errorMsg;
   // HTTP headers that should be in the response
-  private $_headers = array(
+  protected $_headers = array(
     'Content-Type' => 'application/vnd.tent.v0+json',
     'Cache-Control' => 'max-age=0, private, must-revalidate'
   );
 
   /**
+   * Initialize a new AbstractTentResponse implementation
+   * @param array (optional) Headers
+   * @param string (optinoal) Implementing class; overidden by TENT_RESPONSE_TYPE
+   */
+  static function get($headers = null, $type = null) {
+    if (defined('TENT_RESPONSE_TYPE')) {
+      $type = TENT_RESPONSE_TYPE;
+    }
+    $class = ucwords($type).'TentResponse';
+    return new $class($headers);
+  }
+
+  /**
    * Create an error response.
    */
   static function error($code, $message = null, $headers = null) {
-    $R = new TestResponse($headers);
-    $this->_errorCode = $code;
-    $this->_errorMsg = $message;
+    $R = self::get($headers);
+    $R->_errorCode = $code;
+    $R->_errorMsg = $message;
     return $R;
   }
 
   static function file(/* iTentFile */ $file, $headers = null) {
-    $R = new TestResponse($headers);
+    $R = self::get($headers);
     $R->_file = $file;
     return $R;
   }
 
   static function create($body, $headers = null) {
-    $R = new TestResponse($headers);
+    $R = self::get($headers);
     $R->_body = $body;
     return $R;
   }
@@ -136,11 +149,11 @@ abstract class AbstractTentResponse implements ArrayAccess, Iterator {
   }
 
   function offsetSet($offset, $value) {
-    throw new Exception("TestResponse body is immutable.");
+    throw new Exception("TentResponse body is immutable.");
   }
 
   function offsetUnset($offset) {
-    throw new Exception("TestResponse body is immutable.");
+    throw new Exception("TentResponse body is immutable.");
   }
 
   function current() {

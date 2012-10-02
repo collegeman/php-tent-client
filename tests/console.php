@@ -1,7 +1,7 @@
 <?php
 /*
-tent.php
-A simple client for sending requests to a Tent Server.
+console.php
+A simple console server for testing Tent.io clients.
 Copyright 2012 Fat Panda, LLC
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -24,22 +24,20 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-abstract class AbstractTentClient {
-
-  function __construct($profileUri, $appToken, $appSecret, $accessToken = false, $accessSecret = false) {
-
-  }
-
-  abstract function request($url, $options = array());
-
-}
-
-class CurlTentClient extends AbstractTentClient {
-
-  function request($url, $options = array()) {
-    
-  }
-
-}
-
-
+?>
+<doctype html>
+<html>
+  <head>
+    <title>Tent.io Client Console</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/console.css">
+  </head>
+  <body>
+    <div class="container">
+      <p>Hello world!</p>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/console.js"></script>
+  </body>
+</html>
