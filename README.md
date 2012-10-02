@@ -1,11 +1,14 @@
 php-tent-client
 ===============
 
-A client implementation of Tent.io protocol. 
+A client implementation of Tent.io protocol. Can be used on the command line.
 
-Can be used on the command line.
+`php tent.php http://profile.tent.is` 
 
 For a server implementation in PHP, check out [php-tent-server](http://github.com/collegeman/php-tent-server).
+
+If you'd like to be a contributor, checkout the [TODO](https://github.com/collegeman/php-tent-server/blob/master/TODO.md), 
+then [e-mail us](mailto:yo@fatpandadev.com) to find out what we need help with. Thanks!
 
 ## Licensing
 
