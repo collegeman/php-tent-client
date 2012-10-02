@@ -15,8 +15,8 @@ help with. Thanks!
 ## Getting Started
 
 Understanding how to use this client will be easier if you understand
-a little about what [Tent.io](http://tent.io/) is. You don't need to know how it works
-- our client satisifies the protocol for you - but having a general understanding of
+a little about what [Tent.io](http://tent.io/) is. You don't need to know how it works - 
+our client satisifies the protocol for you - but having a general understanding of
 the decentralized nature of the architecture would be a good place to start.
 
 Also, the Tent.io protocol uses oAuth 2 for authentication. If you don't 
