@@ -3,7 +3,7 @@ php-tent-client
 
 A client implementation of Tent.io protocol. Can be used on the command line.
 
-`php tent.php http://profile.tent.is` 
+`php tent.php https://profile.tent.is` 
 
 For a server implementation in PHP, check out [php-tent-server](http://github.com/collegeman/php-tent-server).
 
