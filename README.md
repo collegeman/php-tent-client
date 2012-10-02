@@ -1,16 +1,25 @@
 php-tent-client
 ===============
 
-A client implementation of Tent.io protocol.
-
-`php tent.php https://profile.tent.is` 
+A client implementation of Tent.io protocol, with a test console for exploring server contents.
 
 For a server implementation in PHP, check out [php-tent-server](http://github.com/collegeman/php-tent-server).
 
 If you'd like to be a contributor, checkout the [TODO](https://github.com/collegeman/php-tent-server/blob/master/TODO.md), 
 then [e-mail us](mailto:yo@fatpandadev.com) to find out what we need help with. Thanks!
 
+## Quick Start
 
+    // load the client - all other dependencies will be autoloaded
+    require('php-tent-client/lib/RemoteTentRequest.php');
+    // $entity is a Tent.io Entity URI, e.g., "https://collegeman.tent.is"
+    $request = new RemoteTentRequest($entity);
+    $response = $request->api('/profile');
+    if (!$response->isError()) {
+      print_r($response->body);
+    }
+
+## Exploring with the Console
 
 ## Licensing
 

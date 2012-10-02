@@ -18,6 +18,12 @@ class RemoteTentRequest extends AbstractTentRequest {
     $this->cfg = $config;
   }
 
+  static function autoload($className) {
+    if (strpos($className, 'Tent') !== false) {
+      require(dirname(__FILE__).'/'.$className.'.php');
+    }
+  }
+
   /**
    * Do a request.
    * @return AbstractTentResponse
@@ -44,3 +50,5 @@ class RemoteTentRequest extends AbstractTentRequest {
   }
 
 }
+
+spl_autoload_register(array('RemoteTentRequest', 'autoload'));
