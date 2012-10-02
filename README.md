@@ -12,11 +12,16 @@ then [e-mail us](mailto:yo@fatpandadev.com) to find out what we need help with. 
 
     // load the client - all other dependencies will be autoloaded
     require('php-tent-client/lib/RemoteTentRequest.php');
+
     // $entity is a Tent.io Entity URI, e.g., "https://collegeman.tent.is"
     $request = new RemoteTentRequest($entity);
+
+    // make the request
     $response = $request->api('/profile');
     if (!$response->isError()) {
       print_r($response->body);
+    } else {
+      echo $response->getErrorMessage();
     }
 
 ## Exploring with the Console
