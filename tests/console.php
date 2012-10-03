@@ -28,16 +28,19 @@ require('../lib/RemoteTentRequest.php');
 
 $app = new TentApp('https://collegeman.tent.is', array(
   'name' => 'Console',
-  'description' => 'A simple console application for browsing Tent.io servers'
+  'description' => 'A simple console application for browsing Tent.io servers',
+  'id' => 'izh3wr',
+  'mac_key_id' => 'a:4fa89900',
+  'mac_key' => 'bc7d759c0571e907e746c0f9650b8553',
+  'mac_algorithm' => 'hmac-sha-256',
+  'servers' => array(
+    'https://collegeman.tent.is/tent'
+  )
 ));
 
-$url = htmlentities(print_r($app->register(), true));
+// $url = htmlentities(print_r($app->register(), true));
 
-// $url = $app->getLoginUrl(array(
-//   'id' => 'gn52sf',
-//   'mac_key_id' => 'a:67763491',
-//   'mac_key' => '01c838112e9b5843e7912cd2eb4e0bf7',
-// ));
+$url = $app->getLoginUrl();
 
 ?>
 <doctype html>

@@ -48,12 +48,12 @@ abstract class BaseTentApp extends RemoteTentRequest {
       'tent_post_types' => $this->_cfg['tent_post_types']
     ), $config);
 
-    if (empty($config['id'])) {
-      throw new Exception("Your app is not registered");
+    if (empty($config['client_id'])) {
+      $config['client_id'] = $config['id'];
     }
-
-    $config['client_id'] = $config['id'];
     unset($config['id']);
+    
+    // validate...
 
     $this->set("state_{$config['id']}", $config['state'] = md5($this->_entity.uniqid()));
 
@@ -65,7 +65,13 @@ abstract class BaseTentApp extends RemoteTentRequest {
       $server = array_shift($servers);
     }
 
-    return $server.'/oauth/authorize?'.http_build_query($config);
+    return $server.'/oauth/authorize?'.http_build_query(array(
+      'client_id' => $config['client_id'],
+      'scope' => $config['scope'],
+      'redirect_uri' => $config['redirect_uri'],
+      'tent_profile_info_types' => $config['tent_profile_info_types'],
+      'tent_post_types' => $config['tent_post_types']
+    ));
   }
 
 }
