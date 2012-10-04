@@ -132,11 +132,11 @@ server to login:
     header('Location: $url');
 
 
-## Exploring with the Console
+## Exploring With the Console
 
-## Creating Your own Client
+## Creating Your Own App
 
-## Scopes, Profile Info Types, and Post Types
+### Scopes, Profile Info Types, and Post Types
 
 ## Licensing
 
