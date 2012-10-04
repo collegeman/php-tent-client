@@ -112,22 +112,24 @@ Entity ID. For example, our console application stores its keys this way:
       $_SESSION[$entity]['app'] = $app->getConfig();
     }
 
-Once stored, you can intialize your request object with the stored
-values, thus allowing you to skip the registration step
-in processing future requests.
-
-    session_start();
-    $entity = "https://collegeman.tent.is";
-    $request = new TentApp($entity, $_SESSION[$entity]['console_app']);
-
 Our console app uses the PHP session to store these values - your app
 will probably want to store them someplace a little more permanent,
 like in a database.
 
-The next step is to facilitate authentication. Authentication begins
-by sending the user to the Tent.io server to login:
+Once stored, you can intialize your request object in future requests
+using the stored configuration values, thus allowing you to skip the registration 
+process.
+
+    session_start();
+    $entity = "https://collegeman.tent.is";
+    $request = new TentApp($entity, $_SESSION[$entity]['app']);
+
+The next step is to have the user log in, authorizing your 
+app. Authentication begins by sending the user to his Tent.io 
+server to login:
 
     $url = $app->getLoginUrl();
+    header('Location: $url');
 
 
 ## Exploring with the Console
