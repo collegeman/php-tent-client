@@ -39,7 +39,7 @@ is defined at the top of `TentApp.php`.)
 Next, you need to initialize your `$app` object. 
 
 First, you'll need to provide the client with a Tent.io Entity URI - 
-Tent.io's *username*, eachone representing a unique user's server 
+Tent.io's *username*, each one representing a unique user's server 
 (or cluster of servers - a feature that is handled by our client). 
 
 Next, you'll need to provide meta data that describes your App to
