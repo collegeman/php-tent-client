@@ -1,0 +1,9 @@
+body { margin: 40px; }
+.form-inline { position: relative; }
+label[for="entity"] { z-index: 100000; position: absolute; left: 8px; top: 7px; }
+input[id="entity"] { padding-left: 85px; }
+a.server { color: #ccc; position: absolute; z-index: 100000; top: 5px; left: 90px; }
+a.server span { display: none; }
+a.server:hover { text-decoration: none; }
+#output { margin-top: 15px; }
+form .onion { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0.8; z-index: 200000; }

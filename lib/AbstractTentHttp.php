@@ -1,14 +1,9 @@
 <?php
 /**
+ * Models an HTTP client. 
  * @license MIT
  */
-abstract class AbstractTentClient {
-
-  function __construct() {
-    if (!function_exists('json_decode')) {
-      throw new Exception('CurlTentClient needs the JSON PHP extension.');
-    }
-  }
+abstract class AbstractTentHttp {
 
   /**
    * Build and send an HTTP request.

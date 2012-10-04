@@ -2,7 +2,7 @@
 /**
  * @license MIT
  */
-class CurlTentClient extends AbstractTentClient {
+class CurlTentHttp extends AbstractTentHttp {
 
   public static $CURL_OPTS = array(
     CURLOPT_CONNECTTIMEOUT => 10,
@@ -13,9 +13,8 @@ class CurlTentClient extends AbstractTentClient {
 
   function __construct() {
     if (!function_exists('curl_init')) {
-      throw new Exception('CurlTentClient needs the CURL PHP extension.');
+      throw new Exception('CurlTentHttp requires the CURL PHP extension.');
     }
-    parent::__construct();
   }
 
   function request($url, $options = array()) {
