@@ -48,7 +48,7 @@ function getRequestMethod() {
 function api_post_login() {
   global $config;
 
-  if (!$entity = filter_var(trim($_POST['entity']), FILTER_VALIDATE_URL)) {
+  if (!$entity = TentApp::isValidUrl(trim($_POST['entity']))) {
     throw new Exception("That Entity URI doesn't look like a URI should.");
   }
 

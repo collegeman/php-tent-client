@@ -43,7 +43,7 @@ class RemoteTentRequest extends AbstractTentRequest {
    * @param array Configuration options
    */
   function __construct($entity, $config = array()) {
-    if (!filter_var($entity, FILTER_VALIDATE_URL)) {
+    if (!self::isValidUrl($entity)) {
       throw new Exception("Invalid Entity URI: {$entity}");
     }
 
@@ -99,6 +99,15 @@ class RemoteTentRequest extends AbstractTentRequest {
     }
 
     $this->_cfg = $config;
+  }
+
+  static function isValidUrl($url) {
+    if ($filtered = filter_var($url, FILTER_VALIDATE_URL)) {
+      if (strpos($filtered, 'http') === 0) {
+        return $filtered;
+      }
+    }
+    return false;
   }
 
   static function getProtocol() {
