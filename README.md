@@ -107,17 +107,15 @@ The contents of `$config` will look like this:
     )
 
 You'll want to store this data somewhere and relate it back to the user's
-Entity URI. For example, our console application stores its keys this way:
+Entity URI. For example, our console app uses the PHP session to store 
+these values, but your app will probably want to store them someplace a 
+little more persistent (like in a database).
 
     $response = $app->register()
     if (!$response->isError()) {
       session_start();
       $_SESSION[$entity]['app'] = $app->getConfig();
     }
-
-Our console app uses the PHP session to store these values - your app
-will probably want to store them someplace a little more permanent,
-like in a database.
 
 Once stored, you can intialize your request object in future requests
 using the stored configuration, skipping registration.
@@ -126,9 +124,8 @@ using the stored configuration, skipping registration.
     $entity = "https://collegeman.tent.is";
     $request = new TentIO_App($entity, $_SESSION[$entity]['app']);
 
-The next step is to have the user log in, authorizing your 
-app. Authentication begins by sending the user to his Tent.io 
-server to login:
+The next step is to have the user log in, authorizing your app. Authentication
+begins by redirecting the user to his Tent server to login:
 
     $url = $app->getLoginUrl();
     header('Location: $url');
