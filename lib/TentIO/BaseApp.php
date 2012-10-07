@@ -6,9 +6,9 @@
  * mac key, as well as the CSRF-defending state arg.
  * @license MIT
  */
-abstract class BaseTentApp extends RemoteTentRequest {
+abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
 
-  // TentResponse, the result of sending HEAD request to $_entity
+  // TentIO_Response, the result of sending HEAD request to $_entity
   protected $_discovery;
   // cached list of profiles reported through discovery
   protected $_profiles;
@@ -61,11 +61,11 @@ abstract class BaseTentApp extends RemoteTentRequest {
 
   /**
    * Do a request.
-   * @return AbstractTentResponse
+   * @return TentIO_Response
    */
   function api($path, $method = 'GET', $options = array()) {
     if (!$this->discover()) {
-      return TentResponse::error(404, sprintf("No servers available for [%s]", $this->getEntity()));
+      return TentIO_Response::error(404, sprintf("No servers available for [%s]", $this->getEntity()));
     }
 
     $this->_method = strtoupper($method);
@@ -123,11 +123,11 @@ abstract class BaseTentApp extends RemoteTentRequest {
   function register($options = array()) {
     // already registered?
     if ($this->getAppId()) {
-      return TentResponse::create(json_encode($this->getConfig()), 200);
+      return TentIO_Response::create(json_encode($this->getConfig()), 200);
     }
 
     if (!$servers = $this->discover()) {
-      return TentResponse::error(404, sprintf("No servers available for [%s]", $this->getEntity()));
+      return TentIO_Response::error(404, sprintf("No servers available for [%s]", $this->getEntity()));
     }
 
     $options = array_merge(array(
@@ -192,7 +192,7 @@ abstract class BaseTentApp extends RemoteTentRequest {
     if (empty($options['client_id'])) {
       $response = $this->register();
       if ($response->isError()) {
-        throw new TentAppException("This app could not be registered.", $response);
+        throw new TentIO_AppException("This app could not be registered.", $response);
       }
       $options['client_id'] = $this->getClientId();
     }
@@ -200,7 +200,7 @@ abstract class BaseTentApp extends RemoteTentRequest {
     $server = $this->_servers[0];
     if (!$server) {
       if (!$servers = $this->discover()) {
-        throw new TentAppException("Failed to discover servers for Entity [{$this->_entity}]");
+        throw new TentIO_AppException("Failed to discover servers for Entity [{$this->_entity}]");
       }
       $server = array_shift($servers);
     }
@@ -215,27 +215,6 @@ abstract class BaseTentApp extends RemoteTentRequest {
       'tent_post_types' => $options['tent_post_types'],
       'state' => $options['state']
     ));
-  }
-
-}
-
-/**
- * Models exceptions thrown by the TentApp.
- * @license MIT
- */
-class TentAppException extends Exception {
-
-  private $_response;
-
-  function __construct($message, $tentResponse) {
-    $this->_response = $tentResponse;
-    parent::__construct($message);
-  }
-
-  function __get($name) {
-    if ($name === 'response') {
-      return $this->_response;
-    }
   }
 
 }

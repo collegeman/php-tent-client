@@ -102,7 +102,7 @@ require('bootstrap.php');
     <script>
       var config = {
         'redirect_uri': '<?php 
-          $currentUrl = TentApp::getCurrentUrl();
+          $currentUrl = TentIO_App::getCurrentUrl();
           if (strpos($currentUrl, 'index.php')) {
             $redirect_uri = str_replace('index.php', 'callback.php', $currentUrl);
           } else {

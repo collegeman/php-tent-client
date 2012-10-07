@@ -1,19 +1,10 @@
 <?php
-
-function tent_autoload($className) {
-  if (strpos($className, 'Tent') !== false) {
-    require(dirname(__FILE__).'/'.$className.'.php');
-  }
-}
-
-spl_autoload_register('tent_autoload');
-
 /**
  * An implementation of BaseTentApp that uses the PHP session
  * for storing user-specific tokens.
  * @license MIT
  */
-class TentApp extends BaseTentApp {
+class TentIO_App extends TentIO_BaseApp {
 
   function __construct($url, $config = array()) {
     session_start();

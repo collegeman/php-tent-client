@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-class RemoteTentRequest extends AbstractTentRequest {
+class TentIO_RemoteRequest extends TentIO_AbstractRequest {
 
   // a URI that represents the user to which this App instances is designated
   private $_entity;
@@ -67,10 +67,10 @@ class RemoteTentRequest extends AbstractTentRequest {
         'read_posts' => 'Read posts with types listed in the post_types parameter',
         'write_posts' => 'Read and publish posts with types listed in the post_types parameter'
       ),
-      'http' => new CurlTentHttp()
+      'http' => new TentIO_CurlHttp()
     ), $config);
 
-    if (!$config['http'] instanceof AbstractTentHttp) {
+    if (!$config['http'] instanceof TentIO_AbstractHttp) {
       throw new Exception("HTTP class is invalid.");
     }
 
@@ -131,6 +131,16 @@ class RemoteTentRequest extends AbstractTentRequest {
       $host = $_SERVER['HTTP_HOST'];
     }
     return $host;
+  }
+
+  static function base64UrlDecode($input) {
+    return base64_decode(strtr($input, '-_', '+/'));
+  }
+
+  static function base64UrlEncode($input) {
+    $str = strtr(base64_encode($input), '+/', '-_');
+    $str = str_replace('=', '', $str);
+    return $str;
   }
 
   static function getCurrentUrl() {

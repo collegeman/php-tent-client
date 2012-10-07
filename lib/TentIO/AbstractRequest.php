@@ -3,7 +3,7 @@
  * Models a request to a Tent server.
  * @license MIT
  */
-abstract class AbstractTentRequest implements ArrayAccess, Iterator {
+abstract class TentIO_AbstractRequest implements ArrayAccess, Iterator {
 
   protected $_body;
 

@@ -3,7 +3,23 @@
  * Boostrap for our Console app.
  * @license MIT
  */
-require('../lib/TentApp.php');
+
+//https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
+function console_autoload($className) {
+  $className = ltrim($className, '\\');
+  $fileName  = '';
+  $namespace = '';
+  if ($lastNsPos = strripos($className, '\\')) {
+    $namespace = substr($className, 0, $lastNsPos);
+    $className = substr($className, $lastNsPos + 1);
+    $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+  }
+  $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+
+  require '../lib/'.$fileName;
+}
+
+spl_autoload_register('console_autoload');
 
 session_start();
 
@@ -48,7 +64,7 @@ function getRequestMethod() {
 function api_post_login() {
   global $config;
 
-  if (!$entity = TentApp::isValidUrl(trim($_POST['entity']))) {
+  if (!$entity = TentIO_App::isValidUrl(trim($_POST['entity']))) {
     throw new Exception("That Entity URI doesn't look like a URI should.");
   }
 
@@ -56,7 +72,7 @@ function api_post_login() {
     $config['redirect_uris'] = array($_POST['redirect_uri']);
   }
 
-  $app = new TentApp($entity, $config);
+  $app = new TentIO_App($entity, $config);
   $result = array(
     'url' => $app->getLoginUrl()
   );

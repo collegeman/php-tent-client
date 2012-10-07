@@ -1,7 +1,4 @@
-php-tent-client
-===============
-
-Alpha Version 0.1
+# php-tent-client (v.0.1a)
 
 A client implementation of the [Tent.io](http://tent.io/) protocol, 
 with a test console for exploring server contents.
@@ -12,38 +9,44 @@ If you'd like to be a contributor, checkout the [TODO](https://github.com/colleg
 then [e-mail us](mailto:yo@fatpandadev.com) to find out what we need
 help with. Thanks!
 
-## Getting Started
+## Requirements
 
-Understanding how to use this client will be easier if you understand
-a little about what [Tent.io](http://tent.io/) is. You don't need to know how it works - 
-our client satisifies the protocol for you - but having a general understanding of
-the decentralized nature of the architecture would be a good place to start.
+* PHP 5.2.4 or later
+* cURL extension, or write your own implementation of `TentIO_AbstractHttp`
 
-The Tent.io protocol uses oAuth 2 for authentication. If you don't 
-know anything about oAuth, you should [familiarize yourself](http://en.wikipedia.org/wiki/OAuth)
-with this authentication workflow.
+## Installation
 
-The Tent.io protocol uses [HTTP MAC Access Authentication](http://tools.ietf.org/html/draft-ietf-oauth-v2-http-mac-01),
-to sign app requests. It's less important that you learn about this
-because our implementation of the Client handles request signing for you.
+If you're using a framework that satisfies [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), then
+all you need to do is add `TentIO/**` to your projects `lib` folder.
 
-## Example Usage - Right out of the box
+If you're not using any of these frameworks, a simple autoloader will suffice:
 
-First you need to load the client library.
+    function tentio_autoload($className) {
+      $className = ltrim($className, '\\');
+      $fileName  = '';
+      $namespace = '';
+      if ($lastNsPos = strripos($className, '\\')) {
+        $namespace = substr($className, 0, $lastNsPos);
+        $className = substr($className, $lastNsPos + 1);
+        $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+      }
+      $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 
-    require('php-tent-client/lib/TentApp.php');
+      require 'path/to/php-tent-client/lib/'.$fileName;
+    }
 
-All of the client's dependencies will be autoloaded. (The autoloader
-is defined at the top of `TentApp.php`.)
+    spl_autoload_register('tentio_autoload');
 
-Next, you need to initialize your `$app` object. 
+Support for composer is coming soon.
 
-First, you'll need to provide the client with a Tent.io Entity URI - 
-Tent.io's *username*, each one representing a unique user's server 
-(or cluster of servers - a feature that is handled by our client). 
+## Usage
 
-Next, you'll need to provide meta data that describes your App to
-the server you'll be connecting to. This data will appear in your
+First, you'll need to initialize your `$app` object using the
+Entity URI of the user to whom you wish to connect.
+
+You'll also need to provide meta data that describes your App to
+the server you'll be connecting to - `name`, `description`,
+`url`, and `icon` provide information that appears in your
 App's users' Tent profiles.
 
 Finally, you'll need to configure the client with `redirect_uris`
@@ -54,7 +57,8 @@ authenticate (oAuth workflow style).
 The resulting code will look something like this:
 
     $entity = 'https://collegeman.tent.is';
-    $app = new TentApp($entity, array(
+
+    $app = new TentIO_App($entity, array(
       'name' => 'FooApp',
       'description' => 'Does amazing foos with your data',
       'url' => 'http://example.com',
@@ -69,7 +73,7 @@ The resulting code will look something like this:
     ));
 
 If left undefined, `redirect_uris` will be set to an `array` containing
-only one URL: the current URL of the request. And `scopes`, if left
+only one URL: the URL of the current request. And `scopes`, if left
 undefined, will include all of the scopes proposed by the Tent.io 
 protocol.
 
@@ -102,9 +106,8 @@ The contents of `$config` will look like this:
       )
     )
 
-Now that you have your `mac_key_id` (public) and `mac_key` (private), 
-you'll want to store these values somewhere and relate them back to the user's
-Entity ID. For example, our console application stores its keys this way:
+You'll want to store this data somewhere and relate it back to the user's
+Entity URI. For example, our console application stores its keys this way:
 
     $response = $app->register()
     if (!$response->isError()) {
@@ -117,12 +120,11 @@ will probably want to store them someplace a little more permanent,
 like in a database.
 
 Once stored, you can intialize your request object in future requests
-using the stored configuration values, thus allowing you to skip the registration 
-process.
+using the stored configuration, skipping registration.
 
     session_start();
     $entity = "https://collegeman.tent.is";
-    $request = new TentApp($entity, $_SESSION[$entity]['app']);
+    $request = new TentIO_App($entity, $_SESSION[$entity]['app']);
 
 The next step is to have the user log in, authorizing your 
 app. Authentication begins by sending the user to his Tent.io 
@@ -137,6 +139,12 @@ server to login:
 ## Creating Your Own App
 
 ### Scopes, Profile Info Types, and Post Types
+
+## Credits
+
+Thanks to everyone who supported the development of this client.
+
+(beberlei)[https://github.com/beberlei] - For bringing to our attention the [PHP-FIG](http://www.php-fig.org/), [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), and [Composer](http://getcomposer.org/)
 
 ## Licensing
 

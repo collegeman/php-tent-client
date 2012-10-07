@@ -1,7 +1,7 @@
 <?php
-define('TENT_LOG_ERROR', 'error');
-define('TENT_LOG_WARN', 'warning');
-define('TENT_LOG_INFO', 'info');
+define('TENTIO_LOG_ERROR', 'error');
+define('TENTIO_LOG_WARN', 'warning');
+define('TENTIO_LOG_INFO', 'info');
 
 /**
  * Models a persistent Log for any level of the Tent
@@ -12,33 +12,33 @@ define('TENT_LOG_INFO', 'info');
  * TENT_LOG_TYPE constant, e.g., 'wordpress' or 'slim'.
  * @license MIT
  */
-abstract class TentLog {
+abstract class TentIO_Log {
 
   private static $_instances;
 
   static function get($type = 'stderr') {
-    if (defined('TENT_LOG_TYPE')) {
-      $type = TENT_LOG_TYPE;
+    if (defined('TENTIO_LOG_TYPE')) {
+      $type = TENTIO_LOG_TYPE;
     }
     if (!isset(self::$_instances[$type])) {
-      $class = ucwords($type).'TentLog';
+      $class = 'TentIO_'.ucwords($type).'Log';
       self::$_instances[new $class()];
     }
     return self::$_instances[$type];
   }
 
-  abstract function log($message, $level = TENT_LOG_INFO);
+  abstract function log($message, $level = TENTIO_LOG_INFO);
 
   static function error($message) {
-    return self::get()->log(TENT_LOG_ERROR, $message);
+    return self::get()->log(TENTIO_LOG_ERROR, $message);
   }
 
   static function info($message) {
-    return self::get()->log(TENT_LOG_INFO, $message);
+    return self::get()->log(TENTIO_LOG_INFO, $message);
   }
 
   static function warn($message) {
-    return self::get()->log(TENT_LOG_WARN, $message);
+    return self::get()->log(TENTIO_LOG_WARN, $message);
   }
 
 }

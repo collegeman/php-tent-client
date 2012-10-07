@@ -2,7 +2,7 @@
 /**
  * Models the response from a Tent Server. 
  */
-class TentResponse implements ArrayAccess, Iterator {
+class TentIO_Response implements ArrayAccess, Iterator {
 
   protected $_rawBody;
   // json-decoded body of the response
@@ -20,11 +20,11 @@ class TentResponse implements ArrayAccess, Iterator {
   );
 
   /**
-   * Initialize a new TentResponse
+   * Initialize a new TentIO_Response
    * @param array (optional) Headers
    */
   static function get($headers = null) {
-    return new TentResponse($headers);
+    return new TentIO_Response($headers);
   }
 
   /**
@@ -32,7 +32,7 @@ class TentResponse implements ArrayAccess, Iterator {
    * @param int HTTP status of error
    * @param string Error message
    * @param array headers in the response
-   * @return TentResponse
+   * @return TentIO_Response
    */
   static function error($httpStatusCode = 500, $message = null, $headers = null) {
     $R = self::get($headers);
@@ -45,7 +45,7 @@ class TentResponse implements ArrayAccess, Iterator {
    * Create a file response.
    * @param iTentFile file
    * @param array headers in the response
-   * @return TentResponse
+   * @return TentIO_Response
    */
   static function file(/* iTentFile */ $file, $httpStatusCode = 200, $headers = null) {
     $R = self::get($headers);
@@ -92,7 +92,7 @@ class TentResponse implements ArrayAccess, Iterator {
         $this->setHeader('Content-Type', $file->getMimeType());
       }
       if ($this->isError()) {
-        $this->setHeader('X-TENT-ERROR-MSG', $this->_errorMsg);
+        $this->setHeader('X-TENTIO-ERROR-MSG', $this->_errorMsg);
       } else {
         $this->setHeader('ETag', $this->getETag());
       }
@@ -163,11 +163,11 @@ class TentResponse implements ArrayAccess, Iterator {
   }
 
   function offsetSet($offset, $value) {
-    throw new Exception("TentResponse body is immutable.");
+    throw new Exception("TentIO_Response body is immutable.");
   }
 
   function offsetUnset($offset) {
-    throw new Exception("TentResponse body is immutable.");
+    throw new Exception("TentIO_Response body is immutable.");
   }
 
   function current() {

@@ -2,7 +2,7 @@
 /**
  * @license MIT
  */
-class CurlTentHttp extends AbstractTentHttp {
+class TentIO_CurlHttp extends TentIO_AbstractHttp {
 
   public static $CURL_OPTS = array(
     CURLOPT_CONNECTTIMEOUT => 10,
@@ -88,7 +88,7 @@ class CurlTentHttp extends AbstractTentHttp {
       $regex = '/Failed to connect to ([^:].*): Network is unreachable/';
       if (preg_match($regex, curl_error($ch), $matches)) {
         if (strlen(@inet_pton($matches[1])) === 16) {
-          TentLog::error('Invalid IPv6 configuration on server, Please disable or get native IPv6 on your server.');
+          TentIO_Log::error('Invalid IPv6 configuration on server, Please disable or get native IPv6 on your server.');
           self::$CURL_OPTS[CURLOPT_IPRESOLVE] = CURL_IPRESOLVE_V4;
           curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
           $result = curl_exec($ch);
@@ -112,7 +112,7 @@ class CurlTentHttp extends AbstractTentHttp {
       $body = substr($result, $header_size);
     }
 
-    return TentResponse::create($body, curl_getinfo($ch, CURLINFO_HTTP_CODE), $headers, 'remote');
+    return TentIO_Response::create($body, curl_getinfo($ch, CURLINFO_HTTP_CODE), $headers, 'remote');
   }
 }
 

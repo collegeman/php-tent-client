@@ -2,7 +2,7 @@
 /**
  * @see iTentFile
  */
-class LocalTentFile implements iTentFile {
+class TentIO_LocalFile implements TentIO_iFile {
 
   private $_path;
   function __construct($path, $mimeType = null, $contents = null) {

@@ -23,7 +23,7 @@ if (!is_callable($function)) {
 
 try {
   $result = call_user_func_array($function, $_REQUEST);
-  if ($result instanceof TentResponse) {
+  if ($result instanceof TentIO_Response) {
     $result->write();
   } else {
     echo json_encode($result);

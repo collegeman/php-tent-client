@@ -21,5 +21,5 @@ if (empty($config)) {
 
 $config = $_SESSION[$entity]['app'];
 
-$app = new TentApp($entity, $config);
+$app = new TentIO_App($entity, $config);
 

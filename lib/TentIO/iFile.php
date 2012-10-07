@@ -2,7 +2,7 @@
 /**
  * Models a File being sent to or from a Tent Server.
  */
-interface iTentFile {
+interface TentIO_iFile {
 
   /**
    * @return string Mime-type of the file
