@@ -17,7 +17,7 @@ help with. Thanks!
 ## Installation
 
 If you're using a framework that satisfies [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), then
-all you need to do is add `TentIO/**` to your projects `lib` folder.
+all you need to do is add `TentIO/**` to your project's `lib` folder.
 
 If you're not using any of these frameworks, a simple autoloader will suffice:
 
