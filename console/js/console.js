@@ -54,6 +54,7 @@
   };
 
   $btnLogin.on('click', function() {
+    $btnLogin.button('loading');
     request('login', 'POST', { 
       entity: $entity.val(), 
       redirect_uri: config.redirect_uri 
@@ -125,15 +126,17 @@
     $btnSubmit.attr('disabled', $path.val().trim().length < 1);
   });
 
-  $entity.on('keyup', function(e) {
-    if (e.keyCode === 27) {
-      $btnLogin.trigger('click');
+  $entity.keyup(function(e) {
+    if (e.keyCode === 13) {
+      $btnLogin.trigger('click', e);
       e.stopPropagation();
       e.preventDefault();
       return false;
     }
     $btnLogin.attr('disabled', $entity.val().trim().length < 1);
   });
+
+  $entity.focus();
 
   $form.submit(function() {
 

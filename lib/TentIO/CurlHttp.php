@@ -37,7 +37,7 @@ class TentIO_CurlHttp extends TentIO_AbstractHttp {
         $curl_opts[CURLOPT_URL] = $url . '?' . http_build_query($options['body'], null, '&');
       } else {
         $curl_opts[CURLOPT_URL] = $url;
-        $curl_opts[CURLOPT_POSTFIELDS] = $data = json_encode($options['body']);
+        $curl_opts[CURLOPT_POSTFIELDS] = $data = !is_string($options['body']) ? json_encode($options['body']) : $options['body'];
       }
     } else {
       $curl_opts[CURLOPT_URL] = $url;

@@ -47,6 +47,9 @@ if (isset($_REQUEST['error'])) {
     case 2:
       $error = "<b>Oops!</b> Your app isn't registered yet. Please check configuration, or try again.";
       break;
+    case 4:
+      $error = "<b>Oops!</b> Failed to authenticate.";
+      break;
   }
 }
 

@@ -29,7 +29,7 @@ require('bootstrap.php');
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Tent.io Client Console</title>
+    <title>Tent Console</title>
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/prettify.css">
     <link rel="stylesheet" href="css/console.css">

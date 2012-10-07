@@ -14,7 +14,7 @@ abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
   protected $_profiles;
 
   /**
-   * Store a setting for this Entity.
+   * Store a setting for this Entity, for this App.
    * @param string The arg name
    * @param mixed The arg value
    * @see TentApp for a session-based example
@@ -22,7 +22,7 @@ abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
   abstract function set($name, $value = null);
 
   /**
-   * Retrieve a setting for this Entity.
+   * Retrieve a setting for this Entity, for this App.
    * @param string The arg name
    * @param mixed A default value; defaults to false
    * @see TentApp for a session-based example
@@ -30,7 +30,7 @@ abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
   abstract function get($name, $default = false);
 
   /**
-   * Delete a setting for this Entity.
+   * Delete a setting for this Entity, for this App.
    * @param string The arg name
    */
   abstract function delete($name);
@@ -42,39 +42,122 @@ abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
    */
   abstract function destroySession();
 
-  /**
-   * Get the access token that should be used to sign requests
-   * made by this app.
-   */
-  function getAccessToken() {
-
+  function getUserKey() {
+    if ($access_token = $this->getUserAccessToken()) {
+      return $this->get('mac_key');
+    }
   }
 
   /**
    * Get the user access token made available to this App.
    * This function will look first to the persistent copy
-   * of the user's access token. 
+   * of the user's access token; finding none, it will then
+   * look to the current request for a "code" arg. Finding
+   * this, an access token request will be made. If this is
+   * successful, the access token will be stored.
+   * @return string
+   * @throws TentIO_AppException If no servers are available for Entity.
+   * @throws TentIO_AppException If access token request fails.
    */
-  protected function getUserAccessToken() {
+  function getUserAccessToken() {
+    if ($access_token = $this->get('access_token')) {
+      return $access_token;
+    }
 
+    if (!empty($_REQUEST['code']) && !empty($_REQUEST['state'])) {
+      return $this->getUserAccessTokenFromCode();
+    } else {
+      throw new TentIO_AppException("No user access token available", 500);
+    }   
+  }
+
+  protected function getUserAccessTokenFromCode() {
+    if ($this->get('state') !== $_REQUEST['state']) {
+      $this->delete('state');
+      throw new TentIO_AppException("Invalid CSRF state", 400);
+    }
+
+    $response = $this->api('/apps/'.$this->getClientId().'/authorizations', array(
+      'code' => $_REQUEST['code'],
+      'token_type' => 'mac'
+    ));
+
+    if ($response->isError()) {
+      throw new TentIO_AppException("Invalid access token request", $response);
+    } else {
+      $this->set('access_token', $response->access_token);
+      $this->set('mac_key', $response->mac_key);
+      $this->set('mac_algorithm', $response->mac_algorithm);
+      $this->set('token_type', $response->token_type);
+    }
+
+    $this->delete('state'); 
+
+    return $this->get('access_token');
+  }
+
+  protected function getNewNonce() {
+    return md5($this->getEntity().uniqid());
+  }
+
+  /**
+   * Perform some request of the Tent server that, if successful,
+   * denotes a properly authenticated session.
+   */
+  function isLoggedIn() {
+    $this->api('/posts?limit=1');
+    return true;
   }
 
   /**
    * Do a request.
    * @return TentIO_Response
+   * @throws TentIO_AppException
    */
-  function api($path, $method = 'GET', $options = array()) {
+  function api($path, $method = 'GET', $data = array()) {
     if (!$this->discover()) {
-      return TentIO_Response::error(404, sprintf("No servers available for [%s]", $this->getEntity()));
+      throw new TentIO_AppException(sprintf("No servers available for [%s]", $this->getEntity()), 404);
     }
 
-    $this->_method = strtoupper($method);
-    if (isset($options['body'])) {
-      $this->setBody($options['body']);
-      unset($options['body']);
-    } else {
-      $this->setBody(null);
+    if (is_array($method)) {
+      $data = $method;
+      $method = 'POST';
     }
+
+    $server = rtrim($this->_servers[0], '/');
+    
+    $data['nonce'] = $this->getNewNonce();
+    $data['ts'] = time();
+    
+    if ($url = parse_url($path)) {
+      if ($this->_method !== 'GET') {
+        if (!empty($path['query'])) {
+          parse_str($path['query'], $query);
+          $data = array_merge($data, $query);
+        }
+        $path = $url['path'];
+      }
+    }
+
+    $url = $server.'/'.ltrim($path, '/');
+
+    $key = $this->get('mac_key');
+    if (!$key) {
+      $key = $this->getAppKey();
+    }
+
+    $mac = hash_hmac('sha256', self::base64UrlEncode(json_encode($data)), $key);
+
+    $auth = sprintf('Authorization: MAC id="%s", ts="%s", nonce="%s", mac="%s"', $this->getClientId(), $data['ts'], $data['nonce'], $mac);
+
+    return $this->_http->request($url, array(
+      'method' => strtoupper($method),
+      'body' => $data,
+      'headers' => array(
+        $auth,
+        'Content-Type: application/vnd.tent.v0+json'
+      )
+    )); 
   }
 
   /**
@@ -205,10 +288,11 @@ abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
       $server = array_shift($servers);
     }
     
-    $this->set("state_{$options['client_id']}", $options['state'] = md5($this->_entity.uniqid()));
+    $this->set('state', $options['state'] = $this->getNewNonce());
 
     return $server.'/oauth/authorize?'.http_build_query(array(
       'client_id' => $options['client_id'],
+      'response_type' => 'code',
       'scope' => $options['scope'],
       'redirect_uri' => $options['redirect_uri'],
       'tent_profile_info_types' => $options['tent_profile_info_types'],

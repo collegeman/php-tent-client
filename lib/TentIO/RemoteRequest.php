@@ -231,7 +231,7 @@ class TentIO_RemoteRequest extends TentIO_AbstractRequest {
     return $this->_appKey;
   }
 
-  protected function getUserAccessToken() {
+  function getUserAccessToken() {
     return $this->_userAccessToken;
   }
 

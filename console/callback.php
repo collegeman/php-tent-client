@@ -23,3 +23,4 @@ $config = $_SESSION[$entity]['app'];
 
 $app = new TentIO_App($entity, $config);
 
+echo $app->getUserAccessToken();
