@@ -141,7 +141,7 @@ begins by redirecting the user to his Tent server to login:
 
 Thanks to everyone who supported the development of this client.
 
-(beberlei)[https://github.com/beberlei] - For bringing to our attention the [PHP-FIG](http://www.php-fig.org/), [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), and [Composer](http://getcomposer.org/)
+[beberlei](https://github.com/beberlei) - For bringing to our attention the [PHP-FIG](http://www.php-fig.org/), [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), and [Composer](http://getcomposer.org/)
 
 ## Licensing
 
