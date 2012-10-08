@@ -65,7 +65,17 @@ class TentIO_RemoteRequest extends TentIO_AbstractRequest {
         'read_followings' => 'Read followings list',
         'write_followings' => 'Read followings list and follow new entities',
         'read_posts' => 'Read posts with types listed in the post_types parameter',
-        'write_posts' => 'Read and publish posts with types listed in the post_types parameter'
+        'write_posts' => 'Read and publish posts with types listed in the post_types parameter',
+        // 'import_posts'
+        // 'read_groups',
+        // 'write_groups',
+        // 'read_permissions',
+        // 'write_permissions',
+        // 'read_apps',
+        // 'write_apps',
+        // 'follow_ui',
+        // 'read_secrets',
+        // 'write_secrets'
       ),
       'http' => new TentIO_CurlHttp()
     ), $config);

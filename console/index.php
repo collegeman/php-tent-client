@@ -53,11 +53,11 @@ require('bootstrap.php');
         <div class="span12 form-inline">
           <div class="input-append">
             <input tabindex="1" id="entity" type="text" class="span7" placeholder="https://username.test.is" value="<?php echo htmlentities($entity) ?>" <?php if (!empty($config['mac_key_id'])) echo 'readonly="readonly"' ?>>
-            <label for="entity" class="label label-important" style="margin-right: 10px;">Entity URI</label> 
-            <?php if (empty($config['mac_key_id'])) { ?>
+            <label for="entity" class="label label-<?php echo (empty($entity)) ? 'important' : 'success' ?>" style="margin-right: 10px;">Entity URI</label> 
+            <?php if (empty($access_token)) { ?>
               <button tabindex="2" type="button" class="btn" data-action="login" <?php if (empty($entity)) echo 'disabled="disabled"' ?>><i class="icon-user"></i> Login</button>
             <?php } else { ?>
-              <button tabindex="3" class="btn" data-action="logout"><i class="icon-remove-circle"></i> Logout</button>
+              <button tabindex="3" type="button" class="btn" data-action="logout"><i class="icon-remove-circle"></i> Logout</button>
             <?php } ?>
           </div>
         </div>
@@ -81,7 +81,7 @@ require('bootstrap.php');
             <a href="#" data-toggle="server" class="server"><i class="icon-arrow-right"></i> <span>https://username.tent.is/tent</span>/</a>
           </div>
           <div class="span2">
-            <button tabindex="7" type="submit" class="btn btn-primary pull-right" data-action="submit" disabled="disabled">Submit <i class="icon-arrow-right icon-white"></i></button>
+            <button tabindex="7" type="button" data-action="request" class="btn btn-primary pull-right" data-action="submit">Submit <i class="icon-arrow-right icon-white"></i></button>
           </div>
         </div>
         <div id="fields" class="row"></div>
@@ -92,13 +92,17 @@ require('bootstrap.php');
             <a href="#" tabindex="-1" data-action="remove-field" style="margin-left:5px;"><i class="icon-remove"></i></a>
           </div>
         </div>
-        <pre id="output" class="prettyprint linenums">// no data</pre>
-        <div class="onion" <?php if (!empty($entity)) echo 'style="display:none;"' ?>></div>
+        <pre id="response" class="output prettyprint">// API response will be displayed here</pre>
+        <?php /*
+        <pre class="output prettyprint">// your Tent Console PHP session data
+<?php print_r($_SESSION) ?></pre> */ ?>
+        <div class="onion" <?php if (!empty($access_token)) echo 'style="display:none;"' ?>></div>
       </div>
     </form>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/prettify.js"></script>
+    <script src="js/json2.js"></script>
     <script>
       var config = {
         'redirect_uri': '<?php 

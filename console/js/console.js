@@ -4,7 +4,7 @@
  */
 (function($) {
 
-  window.prettyPrint && prettyPrint();
+  prettyPrint();
 
   var $form = $('form');
   var $fields = $('#fields'), clipboard;
@@ -14,7 +14,7 @@
   var $path = $('#path');
   var $btnLogin = $form.find('[data-action="login"]');
   var $btnLogout = $form.find('[data-action="logout"]');
-  var $btnSubmit = $form.find('button[type="submit"]');
+  var $btnSubmit = $form.find('[data-action="request"]');
   
   var request = function(action, method, data, callback) {
     if ($.isFunction(method)) {
@@ -49,6 +49,9 @@
         $('.alert-error').text(response.error).html(
           '<b>Oops!</b> ' + $('.alert-error').text()
         );
+        if (callback) {
+          callback(response);
+        }
       }
     });
   };
@@ -59,8 +62,9 @@
       entity: $entity.val(), 
       redirect_uri: config.redirect_uri 
     }, function(response) {
-      console.log(response);
-      document.location = response.url;
+      if (response && response.url) {
+        document.location = response.url;
+      }
     });
     return false;
   });
@@ -122,13 +126,19 @@
   }
   fixPathField();
 
-  $path.on('keyup', function() {
+  $path.keyup(function(e) {
+    if (e.keyCode === 13) {
+      $btnSubmit.trigger('click');
+      e.stopPropagation();
+      e.preventDefault();
+      return false;
+    }
     $btnSubmit.attr('disabled', $path.val().trim().length < 1);
   });
 
   $entity.keyup(function(e) {
     if (e.keyCode === 13) {
-      $btnLogin.trigger('click', e);
+      $btnLogin.trigger('click');
       e.stopPropagation();
       e.preventDefault();
       return false;
@@ -136,11 +146,52 @@
     $btnLogin.attr('disabled', $entity.val().trim().length < 1);
   });
 
-  $entity.focus();
+  $btnSubmit.click(function(e) {
+    $this = $(this);
+    $this.button('loading');
+    request('request', 'POST', {
+      /*
+      path: $path.val(), 
+      method: method
+      */
+      path: 'posts',
+      method: 'POST',
+      data: {
+        "type": "https://tent.io/types/post/status/v0.1.0",
+        "published_at": 1348806667,
+        "permissions": {
+          "public": true
+        },
+        "licenses": [
+          "http://creativecommons.org/licenses/by/3.0/"
+        ],
+        "content": {
+          "text": "Just landed.",
+          "location": {
+            "type": "Point",
+            "coordinates": [
+              50.923878,
+              4.028605
+            ]
+          }
+        }
+        
+      }
+    }, function(response) {
+      $this.button('reset');
+      $('#response').html(JSON.stringify(response, null, '  '));
+      prettyPrint();
+    });
+  });
 
   $form.submit(function() {
-
     return false;
   });
+
+  if (!$entity.val().trim()) {
+    $entity.focus();
+  } else {
+    $path.focus();
+  }
 
 })(jQuery);

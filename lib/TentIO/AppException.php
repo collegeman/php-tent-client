@@ -7,7 +7,7 @@ class TentIO_AppException extends Exception {
 
   private $_response;
 
-  function __construct($message, $code, $tentResponse = null) {
+  function __construct($message, $code = null, $tentResponse = null) {
     if ($code instanceof TentIO_Response) {
       $tentResponse = $code;
       $code = $tentResponse->getErrorCode();

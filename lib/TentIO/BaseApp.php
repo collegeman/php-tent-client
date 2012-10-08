@@ -180,14 +180,21 @@ abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
       }
     }
     
-    if (is_null($this->_servers)) {
-      $this->_servers = array();
-      foreach($this->_profiles as $i => $link) {
-        $profile = $this->_http->request($link);
-        if (!$profile->isError()) {
-          $this->_servers = array_merge($this->_servers, $profile->{self::$PROFILE_INFO_TYPES['core']}->servers);      
+    if ($this->_profiles) {
+      if (is_null($this->_servers)) {
+        $this->_servers = array();
+        foreach($this->_profiles as $i => $link) {
+          $profile = $this->_http->request($link);
+          if (!$profile->isError()) {
+            $this->_servers = array_merge($this->_servers, $profile->{self::$PROFILE_INFO_TYPES['core']}->servers);      
+          }
         }
       }
+    }
+
+    if (empty($this->_servers)) {
+      $this->_discovery = null;
+      return false;
     }
 
     return $this->_servers;
@@ -283,7 +290,7 @@ abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
     $server = $this->_servers[0];
     if (!$server) {
       if (!$servers = $this->discover()) {
-        throw new TentIO_AppException("Failed to discover servers for Entity [{$this->_entity}]");
+        throw new TentIO_AppException("Failed to discover servers for Entity [{$this->_entity}]", 404);
       }
       $server = array_shift($servers);
     }
@@ -295,8 +302,8 @@ abstract class TentIO_BaseApp extends TentIO_RemoteRequest {
       'response_type' => 'code',
       'scope' => $options['scope'],
       'redirect_uri' => $options['redirect_uri'],
-      'tent_profile_info_types' => $options['tent_profile_info_types'],
-      'tent_post_types' => $options['tent_post_types'],
+      'tent_profile_info_types' => implode(',', $options['tent_profile_info_types']),
+      'tent_post_types' => implode(',', $options['tent_post_types']),
       'state' => $options['state']
     ));
   }

@@ -11,7 +11,7 @@ help with. Thanks!
 
 ## Requirements
 
-* PHP 5.2.4 or later
+* PHP 5.2.4 or greater
 * cURL extension, or write your own implementation of `TentIO_AbstractHttp`
 
 ## Installation

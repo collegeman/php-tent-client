@@ -9,13 +9,13 @@ require('bootstrap.php');
 
 if (empty($entity)) {
   // user hasn't configured the console yet
-  header('Location: /index.php?error=1');
+  header('Location: /index.php?error='.CONSOLE_APP_LOGIN_ERROR);
   exit(1);
 }
 
 if (empty($config)) {
   // user hasn't register the app yet
-  header('Location: /index.php?error=2');
+  header('Location: /index.php?error='.CONSOLE_APP_REG_ERROR);
   exit(2);
 }
 
@@ -23,4 +23,12 @@ $config = $_SESSION[$entity]['app'];
 
 $app = new TentIO_App($entity, $config);
 
-echo $app->getUserAccessToken();
+try {
+  if ($access_token = $app->getUserAccessToken()) {
+    header('Location: /');
+  } else {
+    header('Location: /index.php?error='.CONSOLE_APP_AUTH_ERROR); 
+  }
+} catch (Exception $e) {
+  header('Location: /index.php?error='.CONSOLE_APP_AUTH_ERROR); 
+}
